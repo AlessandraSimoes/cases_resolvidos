@@ -1,0 +1,49 @@
+{
+	"jobConfig": {
+		"name": "ifood_pip_silver_dim_hour",
+		"description": "",
+		"role": "arn:aws:iam::563717774299:role/execution_pipeline",
+		"command": "glueetl",
+		"version": "4.0",
+		"runtime": null,
+		"workerType": "G.1X",
+		"numberOfWorkers": 10,
+		"maxCapacity": 10,
+		"jobRunQueuingEnabled": false,
+		"maxRetries": 0,
+		"timeout": 2880,
+		"maxConcurrentRuns": 1,
+		"security": "none",
+		"scriptName": "ifood_pip_silver_dim_hour.py",
+		"scriptLocation": "s3://aws-glue-assets-563717774299-sa-east-1/scripts/",
+		"language": "python-3",
+		"spark": false,
+		"sparkConfiguration": "standard",
+		"jobParameters": [
+			{
+				"key": "--conf",
+				"value": "spark.sql.catalog.glue_catalog.glue.skip-name-validation=true",
+				"existing": false
+			}
+		],
+		"tags": [],
+		"jobMode": "DEVELOPER_MODE",
+		"createdOn": "2026-08-16T13:59:28.685Z",
+		"developerMode": true,
+		"connectionsList": [],
+		"temporaryDirectory": "s3://aws-glue-assets-563717774299-sa-east-1/temporary/",
+		"logging": true,
+		"glueHiveMetastore": true,
+		"etlAutoTuning": true,
+		"metrics": true,
+		"observabilityMetrics": true,
+		"bookmark": "job-bookmark-disable",
+		"sparkPath": "s3://aws-glue-assets-563717774299-sa-east-1/sparkHistoryLogs/",
+		"flexExecution": false,
+		"minFlexWorkers": null,
+		"maintenanceWindow": null
+	},
+	"hasBeenSaved": false,
+	"usageProfileName": null,
+	"script": "from pyspark.sql import SparkSession\r\n\r\n# Inicializa Spark\r\nspark = SparkSession.builder.appName(\"Job_dim_hour\").getOrCreate()\r\n\r\n# Caminho de saída no S3\r\noutput_path = \"s3://alsimoes/empresas/ifood/gold/dim_hour.parquet\"\r\n\r\n#Criação da estrutura\r\nhour = [\r\n    (0, \"00:00\"),\r\n    (1, \"01:00\"),\r\n    (2, \"02:00\"),\r\n    (3, \"03:00\"),\r\n    (4, \"04:00\"),\r\n    (5, \"05:00\"),\r\n    (6, \"06:00\"),\r\n    (7, \"07:00\"),\r\n    (8, \"08:00\"),\r\n    (9, \"09:00\"),\r\n    (10, \"10:00\"),\r\n    (11, \"11:00\"),\r\n    (12, \"12:00\"),\r\n    (13, \"13:00\"),\r\n    (14, \"14:00\"),\r\n    (15, \"15:00\"),\r\n    (16, \"16:00\"),\r\n    (17, \"17:00\"),\r\n    (18, \"18:00\"),\r\n    (19, \"19:00\"),\r\n    (20, \"20:00\"),\r\n    (21, \"21:00\"),\r\n    (22, \"22:00\"),\r\n    (23, \"23:00\"),\r\n    (24, \"24:00\")\r\n]\r\n\r\n#Criação dimensão de mês\r\ndf_dim_hour = spark.createDataFrame(hour, [\"id_hour\", \"ds_hour\"])\r\n\r\n# Escrita no S3 Silver\r\ndf_dim_hour.write.mode(\"overwrite\").parquet(output_path)\r\n\r\nprint(\"Dimensão hora gerada com sucesso no caminho: \" + output_path)"
+}
