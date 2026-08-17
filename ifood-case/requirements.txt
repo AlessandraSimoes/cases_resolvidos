@@ -1,0 +1,7 @@
+1. Este case foi desenvolvido 100% na AWS, utilizando os serviços de S3, Glue e Athena. Sendo os notebooks desenvolvidos em spark e utilizado o Data Catalog para persistência das informações no Athena.
+2. Foram considerados somente os meses de 1-5 do ano de 2023.
+3. Todos os arquivos baixados do site foram adicionados na camada bronze.
+4. Já a camada silver foi utilizada para seleção, transformação e qualidade dos dados, enquanto que a gold foi adicionado o modelo dimensional star schema.
+5. Modelo de entidade relacionamento adicionado no case também. (mer_yellow_taxi.pdf)
+6. As respostas estão respondidas no format SQL e foi adicionado também o export dos resultados.
+7. Foi também adicionado no case o arquivo .md para documentação dos scripts. (README.md)
