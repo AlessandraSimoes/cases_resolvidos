@@ -1,0 +1,49 @@
+{
+	"jobConfig": {
+		"name": "ifood_pip_gold_fat_yellow_taxi",
+		"description": "",
+		"role": "arn:aws:iam::563717774299:role/execution_pipeline",
+		"command": "glueetl",
+		"version": "4.0",
+		"runtime": null,
+		"workerType": "G.1X",
+		"numberOfWorkers": 10,
+		"maxCapacity": 10,
+		"jobRunQueuingEnabled": false,
+		"maxRetries": 0,
+		"timeout": 2880,
+		"maxConcurrentRuns": 1,
+		"security": "none",
+		"scriptName": "ifood_pip_gold_fat_yellow_taxi.py",
+		"scriptLocation": "s3://aws-glue-assets-563717774299-sa-east-1/scripts/",
+		"language": "python-3",
+		"spark": false,
+		"sparkConfiguration": "standard",
+		"jobParameters": [
+			{
+				"key": "--conf",
+				"value": "spark.sql.catalog.glue_catalog.glue.skip-name-validation=true",
+				"existing": false
+			}
+		],
+		"tags": [],
+		"jobMode": "DEVELOPER_MODE",
+		"createdOn": "2026-08-16T14:19:55.452Z",
+		"developerMode": true,
+		"connectionsList": [],
+		"temporaryDirectory": "s3://aws-glue-assets-563717774299-sa-east-1/temporary/",
+		"logging": true,
+		"glueHiveMetastore": true,
+		"etlAutoTuning": true,
+		"metrics": true,
+		"observabilityMetrics": true,
+		"bookmark": "job-bookmark-disable",
+		"sparkPath": "s3://aws-glue-assets-563717774299-sa-east-1/sparkHistoryLogs/",
+		"flexExecution": false,
+		"minFlexWorkers": null,
+		"maintenanceWindow": null
+	},
+	"hasBeenSaved": false,
+	"usageProfileName": null,
+	"script": "from pyspark.sql import SparkSession\r\nfrom pyspark.sql import functions as F\r\nfrom pyspark.sql.types import *\r\n\r\n# Inicializa Spark\r\nspark = SparkSession.builder.appName(\"Job_fat_yellow_taxi\").getOrCreate()\r\n\r\n# Caminhos de entrada e saída no S3\r\ninput_path_yellow_taxi = \"s3://alsimoes/empresas/ifood/silver/info_yellow_taxi.parquet/\"\r\noutput_path = \"s3://alsimoes/empresas/ifood/gold/fat_yellow_taxi\"\r\n\r\n# Leitura do Parquet\r\ndf_yellow_taxi = spark.read.parquet(input_path_yellow_taxi)\r\n\r\n#Agrupamento das informações\r\ndf_fat_yellow_taxi = (\r\n    df_yellow_taxi\r\n    .groupBy(\r\n        \"VendorID\",\r\n        \"id_month\",\r\n        \"id_hour\"\r\n    )\r\n    .agg(\r\n        F.sum(\"passenger_count\").alias(\"passenger_count\"),\r\n        F.sum(\"total_amount\").alias(\"total_amount\")\r\n    )\r\n)\r\n\r\n# Escrita no S3 Gold\r\ndf_fat_yellow_taxi.write.mode(\"overwrite\").parquet(output_path)\r\n\r\nprint(\"Fato frota de táxi amarelo gerada com sucesso no caminho: \" + output_path)"
+}

@@ -1,0 +1,49 @@
+{
+	"jobConfig": {
+		"name": "ifood_pip_silver_dim_month",
+		"description": "",
+		"role": "arn:aws:iam::563717774299:role/execution_pipeline",
+		"command": "glueetl",
+		"version": "4.0",
+		"runtime": null,
+		"workerType": "G.1X",
+		"numberOfWorkers": 10,
+		"maxCapacity": 10,
+		"jobRunQueuingEnabled": false,
+		"maxRetries": 0,
+		"timeout": 2880,
+		"maxConcurrentRuns": 1,
+		"security": "none",
+		"scriptName": "ifood_pip_silver_dim_month.py",
+		"scriptLocation": "s3://aws-glue-assets-563717774299-sa-east-1/scripts/",
+		"language": "python-3",
+		"spark": false,
+		"sparkConfiguration": "standard",
+		"jobParameters": [
+			{
+				"key": "--conf",
+				"value": "spark.sql.catalog.glue_catalog.glue.skip-name-validation=true",
+				"existing": false
+			}
+		],
+		"tags": [],
+		"jobMode": "DEVELOPER_MODE",
+		"createdOn": "2026-08-16T13:51:59.919Z",
+		"developerMode": true,
+		"connectionsList": [],
+		"temporaryDirectory": "s3://aws-glue-assets-563717774299-sa-east-1/temporary/",
+		"logging": true,
+		"glueHiveMetastore": true,
+		"etlAutoTuning": true,
+		"metrics": true,
+		"observabilityMetrics": true,
+		"bookmark": "job-bookmark-disable",
+		"sparkPath": "s3://aws-glue-assets-563717774299-sa-east-1/sparkHistoryLogs/",
+		"flexExecution": false,
+		"minFlexWorkers": null,
+		"maintenanceWindow": null
+	},
+	"hasBeenSaved": false,
+	"usageProfileName": null,
+	"script": "from pyspark.sql import SparkSession\r\n\r\n# Inicializa Spark\r\nspark = SparkSession.builder.appName(\"Job_dim_month\").getOrCreate()\r\n\r\n# Caminho de saída no S3\r\noutput_path = \"s3://alsimoes/empresas/ifood/gold/dim_month.parquet\"\r\n\r\n#Criação da estrutura\r\nmonth = [\r\n    (1, \"January\"),\r\n    (2, \"February\"),\r\n    (3, \"March\"),\r\n    (4, \"April\"),\r\n    (5, \"May\"),\r\n    (6, \"June\"),\r\n    (7, \"July\"),\r\n    (8, \"August\"),\r\n    (9, \"September\"),\r\n    (10, \"October\"),\r\n    (11, \"November\"),\r\n    (12, \"December\")\r\n]\r\n\r\n#Criação dimensão de mês\r\ndf_dim_month = spark.createDataFrame(month, [\"id_month\", \"ds_month\"])\r\n\r\n# Escrita no S3 Silver\r\ndf_dim_month.write.mode(\"overwrite\").parquet(output_path)\r\n\r\nprint(\"Dimensão mês gerada com sucesso no caminho: \" + output_path)"
+}
